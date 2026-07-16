@@ -131,7 +131,7 @@ def run(port: str, baud: int, session_id: str, data_dir: str = "data/raw") -> No
     print(f"Recording session '{session_id}' on {port} @ {baud} baud")
     print(f"  -> {bin_path}")
     print(f"  -> {markers_path}")
-    print("Press any key during recording to insert a marker. Ctrl-C to stop.\n")
+    print("Markers: [ = hand skin picking, ] = lip picking, \\ = face skin picking. Ctrl-C to stop.\n")
 
     last_ts_ms = 0
     imu_ppg_count = 0

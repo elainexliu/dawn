@@ -9,6 +9,14 @@ import csv
 import sys
 import os
 
+# Keypress -> BFRB/tic event label. Keys not listed here are consumed and
+# ignored (no marker written) so stray keystrokes don't pollute the CSV.
+KEY_EVENTS = {
+    "[": "skin_picking_hand",
+    "]": "lip_picking",
+    "\\": "skin_picking_face",
+}
+
 
 def _make_nonblocking_check():
     """Return a platform-appropriate non-blocking stdin-check function.
@@ -32,6 +40,22 @@ def _make_nonblocking_check():
         return _check
 
 
+def _make_key_reader():
+    """Return a platform-appropriate function that reads and returns one keypress."""
+    if sys.platform == "win32":
+        import msvcrt
+
+        def _read() -> str:
+            return msvcrt.getwch()
+
+        return _read
+    else:
+        def _read() -> str:
+            return sys.stdin.read(1)
+
+        return _read
+
+
 class MarkerLogger:
     """Write ESP32-timestamped marker rows to a CSV file.
 
@@ -46,28 +70,30 @@ class MarkerLogger:
     def __init__(self, path: str):
         self._path = path
         self._check_key = _make_nonblocking_check()
+        self._read_key = _make_key_reader()
         os.makedirs(os.path.dirname(path), exist_ok=True)
         self._fh = open(path, "w", newline="")
         self._writer = csv.writer(self._fh)
         self._writer.writerow(["timestamp_ms", "event"])
         self._fh.flush()
 
-    def check_and_log(self, last_ts_ms: int, event: str = "marker") -> bool:
+    def check_and_log(self, last_ts_ms: int) -> bool:
         """Call once per receiver loop iteration.
 
-        If a key was pressed, writes *last_ts_ms* (the ESP32 timestamp of the
-        most recently decoded packet) along with *event* to the CSV.
+        If a key in KEY_EVENTS was pressed, writes *last_ts_ms* (the ESP32
+        timestamp of the most recently decoded packet) along with the mapped
+        event label to the CSV. Any other keypress is consumed and ignored.
 
         Returns True if a marker was written.
         """
         if not self._check_key():
             return False
-        # Consume the keypress so it doesn't accumulate
-        if sys.platform == "win32":
-            import msvcrt
-            msvcrt.getwch()
-        else:
-            sys.stdin.read(1)
+        # Always consume the keypress so it doesn't accumulate, even if unmapped
+        key = self._read_key()
+
+        event = KEY_EVENTS.get(key)
+        if event is None:
+            return False
 
         self._writer.writerow([last_ts_ms, event])
         self._fh.flush()
