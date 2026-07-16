@@ -10,9 +10,9 @@ bool ppg_init() {
     // Heart-rate mode: IR + Red LEDs, 25 samples/s, 411µs pulse, 16-bit ADC
     _sensor.setup(
         60,          // LED brightness (0–255)
-        4,           // sample average
+        2,           // sample average
         2,           // LED mode: 1=IR only, 2=IR+Red, 3=IR+Red+Green
-        25,          // sample rate (Hz)
+        100,          // sample rate (Hz)
         411,         // pulse width (µs) — 18-bit ADC resolution
         4096         // ADC range
     );
@@ -20,7 +20,16 @@ bool ppg_init() {
 }
 
 bool ppg_read(PPGReading* out) {
-    out->ir  = _sensor.getIR();
-    out->red = _sensor.getRed();
+    // Non-blocking: check() pulls in any pending FIFO samples with a single
+    // I2C burst and returns immediately. getIR()/getRed() would each block
+    // waiting for a brand-new sample (see MAX3010x library), which wastes
+    // almost a full sample period per call — read from the FIFO buffer
+    // directly instead, same non-blocking style as eda_read().
+    _sensor.check();
+    if (!_sensor.available()) return false; // no new sample yet this tick
+
+    out->ir  = _sensor.getFIFOIR();
+    out->red = _sensor.getFIFORed();
+    _sensor.nextSample();
     return true;
 }

@@ -84,7 +84,20 @@ void loop() {
         IMUReading imu;
         PPGReading ppg;
         ThermalReading thermal;
-        if (imu_read(&imu) && ppg_read(&ppg) && thermal_read(Wire, &thermal)) {
+
+        uint32_t t0 = micros();
+        bool imu_ok = imu_read(&imu);
+        uint32_t t1 = micros();
+        bool ppg_ok = ppg_read(&ppg);
+        uint32_t t2 = micros();
+        bool thermal_ok = thermal_read(Wire, &thermal);
+        uint32_t t3 = micros();
+
+        // Serial.print("imu:"); Serial.print(t1-t0);
+        // Serial.print(" ppg:"); Serial.print(t2-t1);
+        // Serial.print(" thermal:"); Serial.println(t3-t2);
+
+        if (imu_ok && ppg_ok && thermal_ok) {
             ImuPpgPacket pkt;
             packet_fill_imu_ppg(&pkt, now, imu, ppg, thermal);
             stream_send_imu_ppg(&pkt);
