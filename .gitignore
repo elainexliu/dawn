@@ -1,0 +1,48 @@
+# Data and models (large binary files)
+data/raw/
+data/labeled/
+data/processed/
+models/
+
+# Keep directory stubs
+!data/raw/.gitkeep
+!data/labeled/.gitkeep
+!data/processed/.gitkeep
+!models/.gitkeep
+
+# PlatformIO build artifacts
+firmware/.pio/
+firmware/.pioenvs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets / local config
+*.env
+.env
