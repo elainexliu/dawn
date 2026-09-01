@@ -10,7 +10,7 @@ static const uint8_t REG_ACCEL_CONFIG   = 0x1C;
 static const uint8_t REG_ACCEL_XOUT_H   = 0x3B;
 
 bool imu_init() {
-    // Wire.begin() is called once in main.cpp — this bus is shared with
+    // Wire.begin() is called once in main.cpp - this bus is shared with
     // the PPG and thermal sensors.
 
     // Wake the MPU6050 (clear sleep bit)
@@ -25,13 +25,13 @@ bool imu_init() {
     Wire.write(0x03);
     if (Wire.endTransmission() != 0) return false;
 
-    // Gyro full-scale ±250°/s
+    // Gyro full-scale +/-250deg/s
     Wire.beginTransmission(MPU6050_ADDR);
     Wire.write(REG_GYRO_CONFIG);
     Wire.write(0x00);
     if (Wire.endTransmission() != 0) return false;
 
-    // Accel full-scale ±2g
+    // Accel full-scale +/-2g
     Wire.beginTransmission(MPU6050_ADDR);
     Wire.write(REG_ACCEL_CONFIG);
     Wire.write(0x00);
@@ -54,7 +54,7 @@ bool imu_read(IMUReading* out) {
     out->ax = (int16_t)((buf[0]  << 8) | buf[1]);
     out->ay = (int16_t)((buf[2]  << 8) | buf[3]);
     out->az = (int16_t)((buf[4]  << 8) | buf[5]);
-    // buf[6..7] = temperature — skip
+    // buf[6..7] = temperature - skip
     out->gx = (int16_t)((buf[8]  << 8) | buf[9]);
     out->gy = (int16_t)((buf[10] << 8) | buf[11]);
     out->gz = (int16_t)((buf[12] << 8) | buf[13]);

@@ -15,7 +15,7 @@ static bool read_word(TwoWire &bus, uint8_t reg, uint16_t* raw_out) {
 
     uint8_t low  = bus.read();
     uint8_t high = bus.read();
-    bus.read(); // PEC byte — discarded for now, not CRC-checked
+    bus.read(); // PEC byte - discarded for now, not CRC-checked
 
     *raw_out = ((uint16_t)high << 8) | low;
     return true;
@@ -23,7 +23,7 @@ static bool read_word(TwoWire &bus, uint8_t reg, uint16_t* raw_out) {
 
 bool thermal_init(TwoWire &bus) {
     uint16_t raw;
-    // No wake/config step exists for this sensor — just confirm it responds.
+    // No wake/config step exists for this sensor - just confirm it responds.
     return read_word(bus, REG_TA, &raw);
 }
 

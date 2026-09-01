@@ -17,4 +17,3 @@ void stream_send_emg(const EmgPacket* pkt) {
 void stream_send_eda(const EdaPacket* pkt) {
     Serial.write(reinterpret_cast<const uint8_t*>(pkt), sizeof(EdaPacket));
 }
-

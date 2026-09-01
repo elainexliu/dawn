@@ -1,5 +1,5 @@
 """
-evaluate.py — day-based test split evaluation.
+evaluate.py - day-based test split evaluation.
 
 Uses a held-out *day* (the most recent day in the dataset) as the test set
 to avoid leakage from overlapping windows within the same session.
@@ -59,7 +59,7 @@ def day_based_eval(
         "precision": float(precision_score(y_test, y_pred, zero_division=0)),
         "recall":    float(recall_score(y_test, y_pred, zero_division=0)),
     }
-    print(f"\nDay-based eval — held-out day: {test_day}")
+    print(f"\nDay-based eval - held-out day: {test_day}")
     print(f"  train n={metrics['n_train']}  test n={metrics['n_test']}")
     print(classification_report(y_test, y_pred, zero_division=0))
     return metrics

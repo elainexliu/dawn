@@ -1,0 +1,55 @@
+[
+  {
+    "n_valid_replicates": 478,
+    "mean": 0.7533172657565335,
+    "ci_low": 0.5388910196428313,
+    "ci_high": 0.8449577294685992,
+    "feature_set": "D",
+    "model": "rf_shallow",
+    "point_estimate_mean_auc": 0.8186129493337732
+  },
+  {
+    "n_valid_replicates": 478,
+    "mean": 0.7262132609208886,
+    "ci_low": 0.5180996213604909,
+    "ci_high": 0.8709895377197691,
+    "feature_set": "D",
+    "model": "lr_l2_baseline",
+    "point_estimate_mean_auc": 0.7877690333353949
+  },
+  {
+    "n_valid_replicates": 478,
+    "mean": 0.7181903053119557,
+    "ci_low": 0.5517899693171432,
+    "ci_high": 0.8370614035087718,
+    "feature_set": "B",
+    "model": "rf_shallow",
+    "point_estimate_mean_auc": 0.7625221044843471
+  },
+  {
+    "n_valid_replicates": 478,
+    "mean": 0.6182876632769824,
+    "ci_low": 0.4649432040736389,
+    "ci_high": 0.8153633547099095,
+    "feature_set": "D",
+    "model": "gaussian_nb",
+    "point_estimate_mean_auc": 0.7487160835511332
+  },
+  {
+    "n_valid_replicates": 478,
+    "mean": 0.6108908033679833,
+    "ci_low": 0.4550365582974279,
+    "ci_high": 0.8074872164307708,
+    "feature_set": "B",
+    "model": "gaussian_nb",
+    "point_estimate_mean_auc": 0.7412995327516686
+  },
+  {
+    "n_valid_replicates": 478,
+    "mean": 0.5479866635049846,
+    "ci_low": 0.3845077160493828,
+    "ci_high": 0.7724786324786325,
+    "feature_set": "A",
+    "model": "lr_l2_baseline_REFERENCE"
+  }
+]

@@ -1,9 +1,9 @@
 """
-session_marker.py — non-blocking keypress marker logger.
+session_marker.py - non-blocking keypress marker logger.
 
 This is a module, not a script.  Import and use MarkerLogger from receiver.py.
-Timestamps are ESP32 millis() values from the last decoded packet — not host
-wall-clock time — so all labels live in the same clock domain as the raw data.
+Timestamps are ESP32 millis() values from the last decoded packet - not host
+wall-clock time - so all labels live in the same clock domain as the raw data.
 """
 import csv
 import sys

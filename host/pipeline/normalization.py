@@ -1,5 +1,5 @@
 """
-normalization.py — fit/save and load/transform StandardScaler.
+normalization.py - fit/save and load/transform StandardScaler.
 
 Usage pattern:
     # At training time:

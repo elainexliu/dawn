@@ -5,8 +5,8 @@
 #include "sensors/imu.h"
 #include "sensors/ppg.h"
 #include "sensors/thermal.h"
-// Reverted to 3-sensor setup (IMU, PPG, thermal) — EMG/EDA disabled for now.
-// #include "sensors/emg.h"
+#include "sensors/emg.h"
+// EDA disabled - reverted to 3-sensor setup (IMU, PPG, thermal) + EMG.
 // #include "sensors/eda.h"
 
 // IMU (MPU6050), PPG (MAX30102), and thermal (MLX90614) all share the XIAO
@@ -15,16 +15,16 @@ static const int I2C_SDA_PIN = 5; // A4
 static const int I2C_SCL_PIN = 6; // A5
 
 
-// Bus 0 (dedicated): EMG (ADS1115 @0x48) — unused while EMG is disabled
-// static const int EMG_SDA_PIN = 3; // A2
-// static const int EMG_SCL_PIN = 4; // A3
+// Bus 1 (dedicated): EMG (ADS1115 @0x48), isolated from IMU/PPG/thermal/EDA on Wire
+static const int EMG_SDA_PIN = 3; // A2
+static const int EMG_SCL_PIN = 4; // A3
 
-// static const uint32_t EMG_INTERVAL_MS    = 2;   // 500 Hz
-// static const uint32_t EDA_INTERVAL_MS     = 50;  // ~20Hz — plenty for GSR
+static const uint32_t EMG_INTERVAL_MS    = 2;   // 500 Hz
+// static const uint32_t EDA_INTERVAL_MS     = 50;  // ~20Hz - plenty for GSR
 static const uint32_t IMU_PPG_INTERVAL_MS = 20; // 50 Hz
 
 
-// static uint32_t last_emg_ms    = 0;
+static uint32_t last_emg_ms    = 0;
 // static uint32_t last_eda_ms     = 0;
 static uint32_t last_imu_ppg_ms = 0;
 
@@ -32,10 +32,10 @@ void setup() {
     stream_init(921600);
 
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN, 100000);
-    // Wire1.begin(EMG_SDA_PIN, EMG_SCL_PIN, 400000);  // Bus 0 — EMG alone, can run fast-mode
+    Wire1.begin(EMG_SDA_PIN, EMG_SCL_PIN, 400000);  // Bus 1 - EMG alone, can run fast-mode
 
     if (!imu_init()) {
-        // Halt — sensor failure is unrecoverable at this phase
+        // Halt - sensor failure is unrecoverable at this phase
         while (true) { delay(1000); }
     }
     if (!ppg_init()) {
@@ -44,9 +44,9 @@ void setup() {
     if (!thermal_init(Wire)) {
         while (true) { delay(1000); }
     }
-    // if (!emg_init(Wire1)) {
-    //     while (true) { delay(1000); }
-    // }
+    if (!emg_init(Wire1, EMG_SDA_PIN, EMG_SCL_PIN, 400000)) {
+        while (true) { delay(1000); }
+    }
     // if (!eda_init(Wire)) {
     //     while (true) { delay(1000); }
     // }
@@ -56,18 +56,17 @@ void loop() {
     uint32_t now = millis();
     // Serial.println("alive");
 
-    // EMG disabled — 3-sensor setup (IMU, PPG, thermal) for now.
-    // if (now - last_emg_ms >= EMG_INTERVAL_MS) {
-    //     last_emg_ms = now;
-    //     EMGReading emg;
-    //     if (emg_read(Wire1, &emg)) {
-    //         EmgPacket pkt;
-    //         packet_fill_emg(&pkt, now, emg);
-    //         stream_send_emg(&pkt);
-    //     }
-    // }
+    if (now - last_emg_ms >= EMG_INTERVAL_MS) {
+        last_emg_ms = now;
+        EMGReading emg;
+        if (emg_read(Wire1, &emg)) {
+            EmgPacket pkt;
+            packet_fill_emg(&pkt, now, emg);
+            stream_send_emg(&pkt);
+        }
+    }
 
-    // EDA disabled — 3-sensor setup (IMU, PPG, thermal) for now.
+    // EDA disabled - 3-sensor setup (IMU, PPG, thermal) for now.
     // if (now - last_eda_ms >= EDA_INTERVAL_MS) {
     //     last_eda_ms = now;
     //     EDAReading eda;

@@ -1,5 +1,5 @@
 """
-receiver.py — read serial packets from the ESP32 and write a raw session.
+receiver.py - read serial packets from the ESP32 and write a raw session.
 
 Invoke as a module (not directly as a script):
     python -m host.acquisition.receiver --port COM3 --session 001
@@ -22,9 +22,7 @@ import serial
 
 from host.acquisition.session_marker import MarkerLogger
 
-# ---------------------------------------------------------------------------
-# Packet constants (must match packet.h)
-# ---------------------------------------------------------------------------
+# Packet constants - must match packet.h
 PKT_START   = 0xAA
 PKT_END     = 0xBB
 PKT_VERSION = 0x02
@@ -39,11 +37,11 @@ EMG_LEN     = 11
 EDA_LEN     = 11
 
 # struct formats (little-endian)
-# '<BBBIhhhhhhIIffBB'  — IMU+PPG+Thermal (37 bytes)
+# '<BBBIhhhhhhIIffBB'  - IMU+PPG+Thermal (37 bytes)
 FMT_IMU_PPG = "<BBBIhhhhhhIIffBB"
-# '<BBBIhBB'         — EMG (11 bytes)
+# '<BBBIhBB'         - EMG (11 bytes)
 FMT_EMG     = "<BBBIhBB"
-# '<BBBIhBB'         — EDA (11 bytes, same shape as EMG)
+# '<BBBIhBB'         - EDA (11 bytes, same shape as EMG)
 FMT_EDA     = "<BBBIhBB"
 
 assert struct.calcsize(FMT_IMU_PPG) == IMU_PPG_LEN
@@ -62,9 +60,6 @@ FIELDS_EMG = ("start", "type", "version", "timestamp_ms", "emg_raw", "checksum",
 FIELDS_EDA = ("start", "type", "version", "timestamp_ms", "eda_raw", "checksum", "end")
 
 
-# ---------------------------------------------------------------------------
-# Checksum
-# ---------------------------------------------------------------------------
 def _compute_checksum(buf: bytes, start: int, end_excl: int) -> int:
     cs = 0
     for b in buf[start:end_excl]:
@@ -72,9 +67,6 @@ def _compute_checksum(buf: bytes, start: int, end_excl: int) -> int:
     return cs
 
 
-# ---------------------------------------------------------------------------
-# Packet parsers
-# ---------------------------------------------------------------------------
 def _parse_imu_ppg(buf: bytes) -> dict | None:
     """Parse a 37-byte IMU+PPG+Thermal packet buffer. Returns None on checksum/framing error."""
     if len(buf) != IMU_PPG_LEN:
@@ -108,9 +100,6 @@ def _parse_eda(buf: bytes) -> dict | None:
     return dict(zip(FIELDS_EDA, vals))
 
 
-# ---------------------------------------------------------------------------
-# Main read loop
-# ---------------------------------------------------------------------------
 def run(port: str, baud: int, session_id: str, data_dir: str = "data/raw") -> None:
     out_dir = Path(data_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -184,7 +173,7 @@ def run(port: str, baud: int, session_id: str, data_dir: str = "data/raw") -> No
                         last_ts_ms = pkt["timestamp_ms"]
                         eda_count += 1
                 else:
-                    # Unknown type — skip
+                    # Unknown type - skip
                     continue
 
                 marker.check_and_log(last_ts_ms)
@@ -202,9 +191,6 @@ def run(port: str, baud: int, session_id: str, data_dir: str = "data/raw") -> No
     print(f"\nDone. IMU+PPG: {imu_ppg_count}  EMG: {emg_count}  EDA: {eda_count}")
 
 
-# ---------------------------------------------------------------------------
-# CLI entry point
-# ---------------------------------------------------------------------------
 def _parse_args():
     parser = argparse.ArgumentParser(description="Dawn serial receiver")
     parser.add_argument("--port",    required=True,  help="Serial port (e.g. COM3 or /dev/ttyUSB0)")

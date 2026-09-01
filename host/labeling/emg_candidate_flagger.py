@@ -1,5 +1,5 @@
 """
-emg_candidate_flagger.py — automated candidate window detection from EMG.
+emg_candidate_flagger.py - automated candidate window detection from EMG.
 
 Reads a raw .bin session, unpacks only EMG packets, computes a smoothed
 envelope via rectification + Butterworth lowpass, then thresholds to find
@@ -20,7 +20,7 @@ import numpy as np
 from scipy.signal import butter, filtfilt
 
 
-# Packet constants (mirror receiver.py — single source is packet.h)
+# Packet constants (mirror receiver.py - single source is packet.h)
 PKT_START       = 0xAA
 PKT_TYPE_EMG    = 0x02
 EMG_LEN         = 11
@@ -73,7 +73,7 @@ def find_candidates(
     Args:
         packets: Parsed EMG packet dicts with 'timestamp_ms' and 'emg_raw'.
         lowpass_hz: Lowpass cutoff for envelope smoothing.
-        threshold_multiplier: Envelope threshold = multiplier × median envelope.
+        threshold_multiplier: Envelope threshold = multiplier * median envelope.
         min_gap_ms: Merge windows closer than this.
         min_duration_ms: Discard windows shorter than this.
 

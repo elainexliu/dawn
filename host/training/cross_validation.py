@@ -1,5 +1,5 @@
 """
-cross_validation.py — day-based leave-one-group-out cross-validation.
+cross_validation.py - day-based leave-one-group-out cross-validation.
 
 Each "group" is a calendar day. Leaves one day out as the test fold per
 iteration, avoiding leakage from overlapping windows within a session.
@@ -9,6 +9,7 @@ from __future__ import annotations
 import numpy as np
 from sklearn.model_selection import LeaveOneGroupOut
 from sklearn.metrics import roc_auc_score, f1_score
+from sklearn.preprocessing import StandardScaler
 
 
 def day_based_cv(
@@ -20,7 +21,11 @@ def day_based_cv(
     """Run LeaveOneGroupOut CV grouped by day.
 
     Args:
-        X:      Feature matrix (n_samples × n_features).
+        X:      Raw (unscaled) feature matrix (n_samples x n_features). Each
+                fold fits its own StandardScaler on that fold's training
+                data only, so the held-out day never influences the
+                normalization stats used to train on - pass raw features,
+                not pre-scaled ones.
         y:      Binary labels.
         groups: Day-string per sample.
         clf:    Unfitted sklearn-compatible classifier with predict_proba.
@@ -36,14 +41,18 @@ def day_based_cv(
         X_tr, X_te = X[train_idx], X[test_idx]
         y_tr, y_te = y[train_idx], y[test_idx]
 
-        clf_copy = _clone(clf)
-        clf_copy.fit(X_tr, y_tr)
+        scaler = StandardScaler()
+        X_tr_scaled = scaler.fit_transform(X_tr)
+        X_te_scaled = scaler.transform(X_te)
 
-        y_prob = clf_copy.predict_proba(X_te)[:, 1]
-        y_pred = clf_copy.predict(X_te)
+        clf_copy = _clone(clf)
+        clf_copy.fit(X_tr_scaled, y_tr)
+
+        y_prob = clf_copy.predict_proba(X_te_scaled)[:, 1]
+        y_pred = clf_copy.predict(X_te_scaled)
 
         if len(np.unique(y_te)) < 2:
-            # Can't compute AUC with only one class in test fold — skip
+            # Can't compute AUC with only one class in test fold - skip
             continue
 
         aucs.append(roc_auc_score(y_te, y_prob))

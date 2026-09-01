@@ -1,14 +1,14 @@
 """
-review_tool.py — interactive window review and labeling.
+review_tool.py - interactive window review and labeling.
 
 For each candidate window in <session>.candidates.csv, plots IMU / PPG / EMG
 data and waits for a keypress decision.
 
 Keys:
-    y / Enter  → accept (label = 1, BFRB)
-    n          → reject (label = 0, non-BFRB)
-    a          → adjust (prompts new start/end, then re-plots)
-    q          → quit and save progress
+    y / Enter  -> accept (label = 1, BFRB)
+    n          -> reject (label = 0, non-BFRB)
+    a          -> adjust (prompts new start/end, then re-plots)
+    q          -> quit and save progress
 
 Output: data/labeled/<session_id>.labels.csv
     columns: start_ms, end_ms, label
@@ -80,7 +80,7 @@ def _plot_window(imu_df: pd.DataFrame, emg_df: pd.DataFrame,
     emg_win = emg_df.loc[t0:t1]
 
     fig, axes = plt.subplots(4, 1, figsize=(12, 8), sharex=True)
-    fig.suptitle(f"Window {idx + 1}/{total}  |  [{start_ms} – {end_ms} ms]", fontsize=11)
+    fig.suptitle(f"Window {idx + 1}/{total}  |  [{start_ms} - {end_ms} ms]", fontsize=11)
 
     ax_accel, ax_gyro, ax_ppg, ax_emg = axes
 
@@ -99,7 +99,7 @@ def _plot_window(imu_df: pd.DataFrame, emg_df: pd.DataFrame,
         ax_emg.plot(emg_win.index.values, emg_win["emg_raw"] * 0.125, label="EMG (mV)")
 
     ax_accel.set_ylabel("Accel (g)")
-    ax_gyro.set_ylabel("Gyro (°/s)")
+    ax_gyro.set_ylabel("Gyro (deg/s)")
     ax_ppg.set_ylabel("PPG (raw)")
     ax_emg.set_ylabel("EMG (mV)")
     ax_emg.set_xlabel("timestamp_ms")
@@ -159,7 +159,7 @@ def run(session_id: str, data_dir: str = "data") -> None:
                     fig = _plot_window(imu_df, emg_df, new_start, new_end, idx, len(candidates))
                     start_ms, end_ms = new_start, new_end
                 except ValueError:
-                    print("    Invalid input — keeping original bounds.")
+                    print("    Invalid input - keeping original bounds.")
             elif key == "q":
                 plt.close("all")
                 _save_labels(labels, labels_path)

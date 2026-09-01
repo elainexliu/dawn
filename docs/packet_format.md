@@ -12,7 +12,7 @@ Both packet types interleave on the same serial line; the receiver demuxes on th
 
 Receiver algorithm: scan for `0xAA`, read TYPE byte, dispatch to fixed-length reader, validate checksum + end byte.
 
-## Common header (bytes 0–6)
+## Common header (bytes 0-6)
 
 | Offset | Size | Type | Field          | Notes                          |
 |--------|------|------|----------------|--------------------------------|
@@ -23,11 +23,11 @@ Receiver algorithm: scan for `0xAA`, read TYPE byte, dispatch to fixed-length re
 
 ---
 
-## Type `0x01` — IMU + PPG + Thermal (50 Hz)
+## Type `0x01` - IMU + PPG + Thermal (50 Hz)
 
 IMU (MPU6050), PPG (MAX30102), and thermal (MLX90614) share one I2C bus on
 the XIAO ESP32S3 (SDA = GPIO5/A4, SCL = GPIO6/A5), so all three are read and
-packed into one packet per tick — no separate clock to reconcile later.
+packed into one packet per tick - no separate clock to reconcile later.
 
 **Total: 37 bytes**
 Python struct string: `<BBBIhhhhhhIIffBB`
@@ -38,29 +38,30 @@ Python struct string: `<BBBIhhhhhhIIffBB`
 | 1      | 1    | u8   | `type`     | `0x01`                          |
 | 2      | 1    | u8   | `version`  | `0x02`                          |
 | 3      | 4    | u32  | `timestamp_ms` | little-endian               |
-| 7      | 2    | i16  | `accel_x`  | ÷ 16384 → g  (±2 g range)      |
+| 7      | 2    | i16  | `accel_x`  | / 16384 -> g  (+/-2 g range)      |
 | 9      | 2    | i16  | `accel_y`  |                                 |
 | 11     | 2    | i16  | `accel_z`  |                                 |
-| 13     | 2    | i16  | `gyro_x`   | ÷ 131 → °/s  (±250 °/s range)  |
+| 13     | 2    | i16  | `gyro_x`   | / 131 -> deg/s  (+/-250 deg/s range)  |
 | 15     | 2    | i16  | `gyro_y`   |                                 |
 | 17     | 2    | i16  | `gyro_z`   |                                 |
 | 19     | 4    | u32  | `ppg_ir`   | MAX30102 FIFO IR value          |
 | 23     | 4    | u32  | `ppg_red`  | MAX30102 FIFO RED value         |
-| 27     | 4    | f32  | `ambient_c`| MLX90614 Ta — sensor die/ambient temp, °C |
-| 31     | 4    | f32  | `object_c` | MLX90614 Tobj1 — skin temp, °C  |
+| 27     | 4    | f32  | `ambient_c`| MLX90614 Ta - sensor die/ambient temp, degC |
+| 31     | 4    | f32  | `object_c` | MLX90614 Tobj1 - skin temp, degC  |
 | 35     | 1    | u8   | `checksum` | XOR of bytes[1..34] inclusive   |
 | 36     | 1    | u8   | `end`      | `0xBB`                          |
 
-Checksum range: bytes 1 through 34 (type → object_c), i.e. everything between the start byte and checksum.
+Checksum range: bytes 1 through 34 (type -> object_c), i.e. everything between the start byte and checksum.
 
 ---
 
-## Type `0x02` — EMG (500 Hz)
+## Type `0x02` - EMG (500 Hz)
 
-**Not currently streamed.** The MyoWare 2.0 + ADS1115 hardware hasn't
-arrived; `emg.cpp`/`emg.h` and this packet type exist but are commented out
-of the active firmware build (see `main.cpp`). Format retained here for when
-it's wired back in.
+EMG (MyoWare 2.0, thenar placement) runs through its own ADS1115 on a
+dedicated I2C bus (`Wire1`), isolated from the shared IMU/PPG/thermal bus so
+its faster poll rate doesn't contend with the 50 Hz loop. It's a
+labeling/ground-truth instrument, not streamed for live inference - see
+`host/labeling/emg_candidate_flagger.py`.
 
 **Total: 11 bytes**
 Python struct string: `<BBBIhBB`
@@ -71,11 +72,19 @@ Python struct string: `<BBBIhBB`
 | 1      | 1    | u8   | `type`     | `0x02`                                         |
 | 2      | 1    | u8   | `version`  | `0x01`                                         |
 | 3      | 4    | u32  | `timestamp_ms` | little-endian                              |
-| 7      | 2    | i16  | `emg_raw`  | ADS1115 ch0, GAIN_ONE (±4.096 V), 0.125 mV/LSB |
+| 7      | 2    | i16  | `emg_raw`  | ADS1115 ch0, GAIN_ONE (+/-4.096 V), 0.125 mV/LSB |
 | 9      | 1    | u8   | `checksum` | XOR of bytes[1..8] inclusive                   |
 | 10     | 1    | u8   | `end`      | `0xBB`                                         |
 
-Checksum range: bytes 1 through 8 (type → emg_raw).
+Checksum range: bytes 1 through 8 (type -> emg_raw).
+
+---
+
+## Type `0x03` - EDA (disabled)
+
+Defined in `packet.h`/`packet.cpp` but not currently wired into `main.cpp` -
+never gave a clear signal, so it's commented out rather than actively sent.
+Same 11-byte shape as EMG; kept in case it's worth revisiting.
 
 ---
 
@@ -100,6 +109,6 @@ Bump this byte when the byte layout changes.
 | Packet             | Interval | Nominal rate |
 |--------------------|----------|--------------|
 | IMU + PPG + Thermal| 20 ms    | 50 Hz        |
-| EMG (disabled)     | 2 ms     | 500 Hz       |
+| EMG                | 2 ms     | 500 Hz       |
 
 The timer fires from `millis()` in the Arduino loop with `if (now - last >= interval)`.

@@ -1,0 +1,141 @@
+{
+  "target_session": "2026-07-23-07-89pm",
+  "meta": {
+    "session_id": "2026-07-23-07-89pm",
+    "port": "COM6",
+    "baud": 921600,
+    "start_utc": "2026-07-24T03:24:34.452799+00:00",
+    "pkt_version": 2,
+    "end_utc": "2026-07-24T05:36:55.536593+00:00",
+    "imu_ppg_packets": 380526,
+    "emg_packets": 3077604,
+    "eda_packets": 0
+  },
+  "filename_check": [
+    {
+      "session_id": "2026-07-09-benchtest-01",
+      "pattern_match": false
+    },
+    {
+      "session_id": "2026-07-09-benchtest-02",
+      "pattern_match": false
+    },
+    {
+      "session_id": "2026-07-09-benchtest-03",
+      "pattern_match": false
+    },
+    {
+      "session_id": "2026-07-09-benchtest-04-testforkeyboard",
+      "pattern_match": false
+    },
+    {
+      "session_id": "2026-07-16-02-56pm",
+      "pattern_match": true,
+      "parsed_hour": "02",
+      "parsed_minute": "56",
+      "valid_clock_time": true
+    },
+    {
+      "session_id": "2026-07-22-03-910pm",
+      "pattern_match": true,
+      "parsed_hour": "03",
+      "parsed_minute": "910",
+      "valid_clock_time": false
+    },
+    {
+      "session_id": "2026-07-22-04-23pm",
+      "pattern_match": true,
+      "parsed_hour": "04",
+      "parsed_minute": "23",
+      "valid_clock_time": true
+    },
+    {
+      "session_id": "2026-07-22-04-34pm",
+      "pattern_match": true,
+      "parsed_hour": "04",
+      "parsed_minute": "34",
+      "valid_clock_time": true
+    },
+    {
+      "session_id": "2026-07-23-05-34pm",
+      "pattern_match": true,
+      "parsed_hour": "05",
+      "parsed_minute": "34",
+      "valid_clock_time": true
+    },
+    {
+      "session_id": "2026-07-23-06-45pm",
+      "pattern_match": true,
+      "parsed_hour": "06",
+      "parsed_minute": "45",
+      "valid_clock_time": true
+    },
+    {
+      "session_id": "2026-07-23-07-89pm",
+      "pattern_match": true,
+      "parsed_hour": "07",
+      "parsed_minute": "89",
+      "valid_clock_time": false
+    },
+    {
+      "session_id": "2026-07-23-08-1011pm",
+      "pattern_match": true,
+      "parsed_hour": "08",
+      "parsed_minute": "1011",
+      "valid_clock_time": false
+    }
+  ],
+  "scan": {
+    "file_size_bytes": 47933106,
+    "n_imu_ppg": 380526,
+    "n_emg": 3077604,
+    "n_unclassified_0xAA": 0,
+    "corrupt_positions_sample": []
+  },
+  "monotonicity": {
+    "n_backward_jumps": 0,
+    "n_plausible_wraparounds": 0,
+    "n_real_anomalies": 0,
+    "real_anomalies_sample": [],
+    "duration_covered_ms": 7911095
+  },
+  "duplicates": {
+    "exact_consecutive_duplicates": 0,
+    "same_timestamp_different_payload": 0
+  },
+  "marker_density": {
+    "n_markers": 18,
+    "session_duration_min": 131.9,
+    "bucket_minutes": 5,
+    "bucket_counts": [
+      0,
+      0,
+      1,
+      3,
+      1,
+      2,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      0,
+      2,
+      0,
+      0,
+      2,
+      1,
+      0,
+      0
+    ],
+    "last_marker_ts_relative_min": 121.8
+  }
+}

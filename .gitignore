@@ -1,7 +1,8 @@
-# Data and models (large binary files)
+# Data and models (large binary files, personal session data)
 data/raw/
 data/labeled/
 data/processed/
+data/live_sessions/
 models/
 
 # Keep directory stubs
@@ -32,6 +33,13 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 notebooks/.ipynb_checkpoints/
+
+# Cloned public dataset (fetch instructions in experiments/informed_prior/results.md)
+experiments/informed_prior/public_dataset/
+
+# Cached intermediate arrays / run logs from experiments
+experiments/**/_dataset_cache_*.npz
+experiments/**/*.log
 
 # OS
 .DS_Store

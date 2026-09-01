@@ -8,5 +8,5 @@ struct EMGReading {
 };
 
 // EMG's ADS1115 lives on its own dedicated I2C bus (Wire1) for timing isolation.
-bool emg_init(TwoWire &bus);
-bool emg_read(TwoWire &bus, EMGReading* out);
+bool emg_init(TwoWire &bus, int sda_pin, int scl_pin, uint32_t freq_hz);
+bool emg_read(TwoWire &bus, EMGReading* out);   
